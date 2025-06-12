@@ -22,7 +22,7 @@ public class Piece
                 case PieceType.King:
                     return Color == PieceColor.White ? 'K' : 'k';
                 default:
-                    throw new InvalidOperationException($"Unknown piece type: {Type}");
+                    throw new Exception($"Unknown piece type: {Type}");
             }
         }
     } 
@@ -44,7 +44,7 @@ public class Piece
             case "k":
                 return PieceType.King;
             default:
-                throw new ArgumentException($"Invalid piece symbol: {symbol}");
+                throw new Exception($"Invalid piece symbol: {symbol}");
         }
     }
           

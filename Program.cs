@@ -1,6 +1,4 @@
-﻿Engine engine = new();
-
-Console.WriteLine("Welcome to BurkFish, type help for a list of commands");
+﻿Console.WriteLine("Welcome to BurkFish, type help for a list of commands");
 
 while(true)
 {
