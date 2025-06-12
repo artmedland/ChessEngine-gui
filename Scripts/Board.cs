@@ -51,7 +51,6 @@ public class Board
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.Write(row + 1);
-            Console.ResetColor();
             
             for (int col = 0; col < 8; col++)
             {
@@ -61,7 +60,6 @@ public class Board
                 {
                     Console.ForegroundColor = ConsoleColor.DarkBlue;
                     Console.Write('-');
-                    Console.ResetColor();
                     continue;
                 }      
                 
@@ -69,10 +67,12 @@ public class Board
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                 }
-                
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.White;
+                }
+           
                 Console.Write(pieces[col, row].Symbol);
-                Console.ResetColor();
-
             }
             Console.WriteLine();
         }
@@ -86,6 +86,7 @@ public class Board
             Console.Write(' ');
         }
         Console.ResetColor();
+        Console.WriteLine();
         Console.WriteLine();
     }
 }
