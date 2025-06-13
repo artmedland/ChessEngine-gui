@@ -30,12 +30,12 @@ public struct Coordinate
         return !(a == b);
     }
 
-    public override bool Equals(object? obj)
+    public override readonly bool Equals(object? obj)
     {
         return obj is Coordinate other && this == other;
     }
 
-    public override int GetHashCode()
+    public override readonly int GetHashCode()
     {
         return HashCode.Combine(Col, Row);
     }
