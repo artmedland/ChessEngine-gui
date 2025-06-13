@@ -38,7 +38,7 @@ public class Board
                     var piece = Piece.GetPieceFromSymbol(rows[i][j]);
                     piece.Color = char.IsUpper(rows[i][j]) ? PieceColor.White : PieceColor.Black;
                     //todo: add logic that checks if a piece has been moved
-                    piece.hasMoved = false;
+                    piece.HasMoved = false;
                     pieces[x, y] = piece;
                     
                     x++;
