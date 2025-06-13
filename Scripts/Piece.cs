@@ -1,48 +1,26 @@
-public class Piece
+public abstract class Piece
 {
     public PieceColor Color { get; set; }
     public PieceType Type { get; set; }
     public bool hasMoved { get; set; }
-    public char Symbol 
-    {
-        get
-        {
-            switch(Type)
-            {
-                case PieceType.Pawn:
-                    return Color == PieceColor.White ? 'P' : 'p';
-                case PieceType.Knight:
-                    return Color == PieceColor.White ? 'N' : 'n';
-                case PieceType.Bishop:
-                    return Color == PieceColor.White ? 'B' : 'b';
-                case PieceType.Rook:
-                    return Color == PieceColor.White ? 'R' : 'r';
-                case PieceType.Queen:
-                    return Color == PieceColor.White ? 'Q' : 'q';
-                case PieceType.King:
-                    return Color == PieceColor.White ? 'K' : 'k';
-                default:
-                    throw new Exception($"Unknown piece type: {Type}");
-            }
-        }
-    } 
-
-    public static PieceType GetPieceFromSymbol(char symbol)
-    {
+    public abstract char Symbol{ get; }
+    
+    public static Piece GetPieceFromSymbol(char symbol)
+    {     
         switch(symbol.ToString().ToLower())
         {
             case "p":
-                return PieceType.Pawn;
+                return new Pawn();
             case "n":
-                return PieceType.Knight;
+                return new Knight();
             case "b":
-                return PieceType.Bishop;
+                return new Bishop();
             case "r":
-                return PieceType.Rook;
+                return new Rook();
             case "q":
-                return PieceType.Queen;
+                return new Queen();
             case "k":
-                return PieceType.King;
+                return new King();
             default:
                 throw new Exception($"Invalid piece symbol: {symbol}");
         }

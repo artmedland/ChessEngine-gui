@@ -19,4 +19,24 @@ public struct Coordinate
     }
     
     public override string ToString() => $"{(char)('a' + Col)}{Row + 1}";
+    
+    public static bool operator ==(Coordinate a, Coordinate b)
+    {
+        return a.Col == b.Col && a.Row == b.Row;
+    }
+
+    public static bool operator !=(Coordinate a, Coordinate b)
+    {
+        return !(a == b);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is Coordinate other && this == other;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Col, Row);
+    }
 }
