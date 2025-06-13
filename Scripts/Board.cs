@@ -1,7 +1,9 @@
+using System.Dynamic;
+
 public class Board
 {
-    Piece[,] pieces = new Piece[8, 8];
-    PieceColor currentTurn;
+    public Piece?[,] pieces = new Piece?[8, 8];
+    public PieceColor currentTurn {get; set;}
     Coordinate enPassantCoordinate;
     public const string DefaultFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
@@ -33,9 +35,10 @@ public class Board
                 }
                 else
                 {
-                    pieces[x, y] = new Piece();
-                    pieces[x, y].Color = char.IsUpper(rows[i][j]) ? PieceColor.White : PieceColor.Black;
-                    pieces[x, y].Type = Piece.GetPieceFromSymbol(rows[i][j]);
+                    Piece piece = new();
+                    piece.Color = char.IsUpper(rows[i][j]) ? PieceColor.White : PieceColor.Black;
+                    piece.Type = Piece.GetPieceFromSymbol(rows[i][j]);
+                    pieces[x, y] = piece;
                     
                     x++;
                 }
@@ -63,16 +66,16 @@ public class Board
                     continue;
                 }      
                 
-                if(pieces[col,row].Color == PieceColor.Black)
+                if(pieces[col,row]!.Color == PieceColor.Black)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
-                }
+                }          
                 else
                 {
                     Console.ForegroundColor = ConsoleColor.White;
                 }
-           
-                Console.Write(pieces[col, row].Symbol);
+                               
+                Console.Write(pieces[col, row]!.Symbol);
             }
             Console.WriteLine();
         }
@@ -86,7 +89,6 @@ public class Board
             Console.Write(' ');
         }
         Console.ResetColor();
-        Console.WriteLine();
-        Console.WriteLine();
+        Console.WriteLine();      
     }
 }
