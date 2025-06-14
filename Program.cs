@@ -45,11 +45,13 @@ class Program
         }
     }
     
-    static void Game()
+    static void Game() //Add command to output current board as FEN
     {
         Board board = new();
         while(true)
         {
+            Console.WriteLine();
+            Console.WriteLine(board.GenerateFEN());
             Console.WriteLine();
             board.Draw();
             Console.WriteLine();
@@ -64,9 +66,9 @@ class Program
                     Console.WriteLine("No input");
                     continue;
                 }
-                if(input == "stop")
+                if(input == "stop" || input == "end" || input == "exit")
                 {
-                    Console.WriteLine("Game stopped");
+                    Console.WriteLine("Game ended");
                     return;
                 }
 
@@ -113,7 +115,7 @@ class Program
 
     static void PromptSymbolStyle()
     {
-        Console.WriteLine("Do these look like chess pieces to you?");
+        Console.WriteLine("Do these look like chess pieces?");
         Console.WriteLine("♚ ♛ ♜ ♝ ♞ ♟");
         
         while (true)

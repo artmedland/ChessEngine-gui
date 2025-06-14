@@ -2,7 +2,9 @@ public static class GameLogic
 {
     public static void ApplyMove(Board board, Move move) //ALWAYS CHECK IF MOVE IS LEGAL BEFORE APPLYING MOVE
     {
-        board.pieces[move.To.Col, move.To.Row] = board.pieces[move.From.Col, move.From.Row];
+        Piece pieceToMove = board.pieces[move.From.Col, move.From.Row]!;
+        board.pieces[move.To.Col, move.To.Row] = pieceToMove;
+        pieceToMove.HasMoved = true;
         board.pieces[move.From.Col, move.From.Row] = null;
         board.CurrentTurn = board.CurrentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;
     }

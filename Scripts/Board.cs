@@ -2,7 +2,7 @@ public class Board
 {
     public Piece?[,] pieces = new Piece?[8, 8];
     public PieceColor CurrentTurn {get; set;}
-    Coordinate enPassantCoordinate;
+    Coordinate? enPassantCoordinate = null;
     public const string DefaultFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     public Board(string FEN = DefaultFEN)
@@ -47,6 +47,47 @@ public class Board
         }
     }
        
+    public string GenerateFEN()
+    {
+        string FEN = "";
+            
+        for (int row = 7; row >= 0; row--)
+        {
+            int emptyCount = 0;
+            
+            for (int col = 0; col < 8; col++)
+            {
+                Piece? piece = pieces[col, row];
+                      
+                if(piece == null)
+                {
+                    emptyCount++;
+                    
+                    if(col == 7)
+                        FEN += emptyCount.ToString();
+                                       
+                }              
+                else
+                {
+                    if(emptyCount > 0)
+                    {
+                        FEN += emptyCount.ToString();
+                        emptyCount = 0;
+                    }
+                        
+                    FEN += piece.AsciiSymbol;
+                }                 
+            }
+            if(row > 0)
+                FEN += "/";
+        }
+
+        FEN += " ";
+        FEN += CurrentTurn == PieceColor.White ? "w" : "b";
+        
+        return FEN;
+    }
+    
     public void Draw()
     {
         for (int row = 7; row >= 0; row--)
