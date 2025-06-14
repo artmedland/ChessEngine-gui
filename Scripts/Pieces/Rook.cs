@@ -1,4 +1,5 @@
 public class Rook : Piece
 {
-    public override char Symbol => Color == PieceColor.White ? 'R' : 'r';
+    public override char UnicodeSymbol => '♜';
+    public override char AsciiSymbol => Color == PieceColor.White ? 'R' : 'r';
 }

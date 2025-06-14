@@ -1,8 +1,9 @@
 public abstract class Piece
 {
     public PieceColor Color { get; set; }
-    public bool HasMoved { get; set; }
-    public abstract char Symbol{ get; }
+    public bool HasMoved { get; set; } = false;
+    public abstract char UnicodeSymbol { get; }
+    public abstract char AsciiSymbol { get; }
     
     //Maybe return "to" coordinate instead, depends
     //public abstract IEnumerable<Move> GetLegalMoves(Board board, Coordinate from); 

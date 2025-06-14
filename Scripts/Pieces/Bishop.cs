@@ -1,4 +1,5 @@
 public class Bishop : Piece
 {
-    public override char Symbol => Color == PieceColor.White ? 'B' : 'b';
+    public override char UnicodeSymbol => '♝';
+    public override char AsciiSymbol => Color == PieceColor.White ? 'B' : 'b';
 }

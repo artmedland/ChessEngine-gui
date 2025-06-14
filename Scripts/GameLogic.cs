@@ -4,7 +4,7 @@ public static class GameLogic
     {
         board.pieces[move.To.Col, move.To.Row] = board.pieces[move.From.Col, move.From.Row];
         board.pieces[move.From.Col, move.From.Row] = null;
-        board.currentTurn = board.currentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;
+        board.CurrentTurn = board.CurrentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;
     }
     
     public static bool IsLegalMove(Board board, Move move)
@@ -20,7 +20,7 @@ public static class GameLogic
 
         Piece piece = board.pieces[move.From.Col, move.From.Row]!;
 
-        return piece.Color == board.currentTurn;
+        return piece.Color == board.CurrentTurn;
     }
     
     public static bool IsLegalPosition(Board board)

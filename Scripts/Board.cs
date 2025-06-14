@@ -1,9 +1,7 @@
-using System.Dynamic;
-
 public class Board
 {
     public Piece?[,] pieces = new Piece?[8, 8];
-    public PieceColor currentTurn {get; set;}
+    public PieceColor CurrentTurn {get; set;}
     Coordinate enPassantCoordinate;
     public const string DefaultFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
@@ -16,7 +14,7 @@ public class Board
     {
         string[] splitFEN = FEN.Split(' ');
         
-        currentTurn = splitFEN[1] == "w" ? PieceColor.White : PieceColor.Black;
+        CurrentTurn = splitFEN[1] == "w" ? PieceColor.White : PieceColor.Black;
         
         string FENpieces = splitFEN[0];        
         string[] rows = FENpieces.Split('/');     
@@ -58,16 +56,17 @@ public class Board
             
             for (int col = 0; col < 8; col++)
             {
-                Console.Write(' ');  
+                Console.Write(' ');
+                Piece? piece = pieces[col, row];
                       
-                if(pieces[col, row] == null)
+                if(piece == null)
                 {
-                    Console.ForegroundColor = ConsoleColor.DarkBlue;
-                    Console.Write('-');
+                    Console.ForegroundColor = (row + col) % 2 == 0 ? ConsoleColor.DarkGreen : ConsoleColor.Gray;
+                    Console.Write('·');
                     continue;
                 }      
                 
-                if(pieces[col,row]!.Color == PieceColor.Black)
+                if(piece.Color == PieceColor.Black)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkGray;
                 }          
@@ -76,7 +75,7 @@ public class Board
                     Console.ForegroundColor = ConsoleColor.White;
                 }
                                
-                Console.Write(pieces[col, row]!.Symbol);
+                Console.Write(Program.UseUnicodeSymbols ? piece.UnicodeSymbol : piece.AsciiSymbol);
             }
             Console.WriteLine();
         }
