@@ -2,50 +2,103 @@
 class Program
 {
     public static bool UseUnicodeSymbols { get; set; } = true;
+    
+    const string HelpText = @"
+Available commands:
+
+    draw <FEN>
+        Draws the chessboard using the given FEN string
+
+    play
+        Starts a new game. You may be prompted for player side and board state
+
+    use ascii
+        Displays pieces using ASCII symbols: K Q R B N P
+
+    use unicode
+        Displays pieces using Unicode symbols: ♚ ♛ ♜ ♝ ♞ ♟
+
+    clear
+        Clears the console screen
+
+    help
+        Displays this help message
+
+    exit
+        Exits the program
+    ";
 
     static void Main(string[] args)
     {
         Console.OutputEncoding = Encoding.UTF8;
-        PromptSymbolStyle();
+        //PromptSymbolStyle();
         Console.Clear();
-        Console.WriteLine("Welcome to BurkFish, type help for a list of commands");
+        Console.WriteLine("Type help for a list of commands");
 
         while (true)
         {
-            HandleInput();
+            if(!HandleInput())
+                break;        
         }
     }
     
-    static void HandleInput()
+    static bool HandleInput()
     {
         string? input = Console.ReadLine()?.Trim();
         
         if (input == null)
-            return;
+            return true;
+            
+        string inputLower = input.ToLower();
         
-        if (input.StartsWith("draw"))
+        if (inputLower.StartsWith("draw"))
         {
-            try
-            {
-                string FEN = input["draw ".Length..].Trim();
-                Board board = new(FEN);
-                Console.WriteLine();
-                board.Draw();
-                Console.WriteLine();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
-        //play playerSide FEN
-        else if (input.StartsWith("play"))
+            DrawBoard(input);
+        }   
+        else if (inputLower.StartsWith("play"))
         {
-            Game();
+            Game(); //play playerSide FEN
         }
+        else if(inputLower == "clear")
+        {
+            Console.Clear();
+        }
+        else if(inputLower == "use ascii")
+        {
+            UseUnicodeSymbols = false;
+            Console.WriteLine();
+            Console.WriteLine("Using ASCII");
+            Console.WriteLine("Pieces: K Q R B N P");
+            Console.WriteLine();
+        }
+        else if(inputLower == "use unicode")
+        {
+            UseUnicodeSymbols = true;
+            Console.WriteLine();
+            Console.WriteLine("Using Unicode");
+            Console.WriteLine("Pieces: ♚ ♛ ♜ ♝ ♞ ♟");
+            Console.WriteLine();
+        }
+        else if(inputLower == "help" || inputLower == "h")
+        {
+            Console.WriteLine(HelpText);
+        }
+        else if(inputLower == "exit")
+        {
+            return false;
+        }
+        else
+        {
+            Console.WriteLine();
+            Console.WriteLine("Unknown command");
+            Console.WriteLine("Type help for a list of commands");
+            Console.WriteLine();
+        }
+
+        return true;
     }
     
-    static void Game() //Add command to output current board as FEN
+    static void Game()
     {
         Board board = new();
         while(true)
@@ -66,9 +119,11 @@ class Program
                     Console.WriteLine("No input");
                     continue;
                 }
-                if(input == "stop" || input == "end" || input == "exit")
+                if(input == "stop" || input == "end")
                 {
+                    Console.WriteLine();
                     Console.WriteLine("Game ended");
+                    Console.WriteLine();
                     return;
                 }
 
@@ -132,6 +187,22 @@ class Program
                 UseUnicodeSymbols = false;
                 break;
             }           
+        }
+    }
+
+    static void DrawBoard(string input)
+    {
+        try
+        {
+            string FEN = input["draw ".Length..].Trim();
+            Board board = new(FEN);
+            Console.WriteLine();
+            board.Draw();
+            Console.WriteLine();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
         }
     }
 }

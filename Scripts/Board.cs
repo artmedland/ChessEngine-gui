@@ -1,8 +1,10 @@
 public class Board
 {
     public Piece?[,] pieces = new Piece?[8, 8];
-    public PieceColor CurrentTurn {get; set;}
-    Coordinate? enPassantCoordinate = null;
+    public PieceColor CurrentTurn { get; set; } = PieceColor.White;
+    Coordinate? EnPassantCoordinate { get; set; } = null;
+    int HalfmoveClock { get; set; } = 0;
+    int FullmoveCounter { get; set; } = 1;
     public const string DefaultFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     public Board(string FEN = DefaultFEN)
@@ -35,7 +37,7 @@ public class Board
                 {
                     var piece = Piece.GetPieceFromSymbol(rows[i][j]);
                     piece.Color = char.IsUpper(rows[i][j]) ? PieceColor.White : PieceColor.Black;
-                    //todo: add logic that checks if a piece has been moved
+                    //todo: add logic that checks if a piece has been moved, only needed for pawns, kings and rooks
                     piece.HasMoved = false;
                     pieces[x, y] = piece;
                     

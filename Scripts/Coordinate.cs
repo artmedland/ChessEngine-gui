@@ -18,7 +18,7 @@ public struct Coordinate
         Row = notation[1] - '1'; 
     }
     
-    public override string ToString() => $"{(char)('a' + Col)}{Row + 1}";
+    public override readonly string ToString() => $"{(char)('a' + Col)}{Row + 1}";
     
     public static bool operator ==(Coordinate a, Coordinate b)
     {
