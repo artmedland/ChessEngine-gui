@@ -1,6 +1,6 @@
 public static class GameLogic
 {
-    public static void ApplyMove(Board board, Move move) //ALWAYS CHECK IF MOVE IS LEGAL BEFORE APPLYING MOVE
+    public static void ApplyMove(Board board, Move move, string promotionPiece = "q") //ALWAYS CHECK IF MOVE IS LEGAL BEFORE APPLYING MOVE
     {
         Piece pieceToMove = board.pieces[move.From.Col, move.From.Row]!;
         board.pieces[move.To.Col, move.To.Row] = pieceToMove;

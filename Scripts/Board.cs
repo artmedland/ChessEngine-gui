@@ -20,6 +20,7 @@ public class Board
         
         string FENpieces = splitFEN[0];        
         string[] rows = FENpieces.Split('/');     
+        
         //So that white is at row 0
         int y = 7;
         
@@ -51,7 +52,7 @@ public class Board
        
     public string GenerateFEN()
     {
-        string FEN = "";
+        string FENpieces = "";
             
         for (int row = 7; row >= 0; row--)
         {
@@ -66,28 +67,55 @@ public class Board
                     emptyCount++;
                     
                     if(col == 7)
-                        FEN += emptyCount.ToString();
+                        FENpieces += emptyCount.ToString();
                                        
                 }              
                 else
                 {
                     if(emptyCount > 0)
                     {
-                        FEN += emptyCount.ToString();
+                        FENpieces += emptyCount.ToString();
                         emptyCount = 0;
                     }
                         
-                    FEN += piece.AsciiSymbol;
+                    FENpieces += piece.AsciiSymbol;
                 }                 
             }
             if(row > 0)
-                FEN += "/";
+                FENpieces += "/";
         }
 
-        FEN += " ";
-        FEN += CurrentTurn == PieceColor.White ? "w" : "b";
+        string FENturn = CurrentTurn == PieceColor.White ? "w" : "b";
+
+        string castleString = "";
         
-        return FEN;
+        if(pieces[4,0] is King whiteKing && !whiteKing.HasMoved)
+        {
+            if(pieces[7,0] is Rook rookKingside  && !rookKingside.HasMoved)
+            {
+                castleString += "K";
+            }
+            if(pieces[0,0] is Rook rookQueenSide && !rookQueenSide.HasMoved)
+            {
+                castleString += "Q";
+            }
+        }
+        if(pieces[4,7] is King blackKing && !blackKing.HasMoved)
+        {
+            if(pieces[7,7] is Rook rookKingside  && !rookKingside.HasMoved)
+            {
+                castleString += "k";
+            }
+            if(pieces[0,7] is Rook rookQueenSide && !rookQueenSide.HasMoved)
+            {
+                castleString += "q";
+            }
+        }
+        castleString = castleString == "" ? "-" : castleString;
+
+        string FENenPassantCoordinate = EnPassantCoordinate?.ToString() ?? "-";
+ 
+        return $"{FENpieces} {FENturn} {castleString} {FENenPassantCoordinate} {HalfmoveClock} {FullmoveCounter}";
     }
     
     public void Draw()

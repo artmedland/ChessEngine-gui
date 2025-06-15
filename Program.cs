@@ -44,10 +44,7 @@ Available commands:
     
     static bool HandleInput()
     {
-        string? input = Console.ReadLine()?.Trim();
-        
-        if (input == null)
-            return true;
+        string input = Console.ReadLine()?.Trim() ?? "";
             
         string inputLower = input.ToLower();
         
@@ -86,6 +83,10 @@ Available commands:
         else if(inputLower == "exit")
         {
             return false;
+        }
+        else if(input == "")
+        {
+            return true;
         }
         else
         {
