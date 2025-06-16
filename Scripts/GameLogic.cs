@@ -1,5 +1,3 @@
-using System.Reflection.Emit;
-
 public static class GameLogic
 {
     public static void ApplyMove(Board board, Move move, char promotionPieceSymbol = 'q') //ALWAYS CHECK IF MOVE IS LEGAL BEFORE USING THIS METHOD

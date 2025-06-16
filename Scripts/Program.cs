@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using System.Threading.Channels;
 class Program
 {
     public static bool UseUnicodeSymbols { get; set; } = true;
@@ -196,8 +197,38 @@ Available commands:
                 else
                 {
                     fenHistory.Push(currentFEN);
-                    GameLogic.ApplyMove(board, move);
-                    break;
+                    
+                    if(board.pieces[move.From.Col, move.From.Row] is Pawn && (move.To.Row == 0 || move.To.Row == 7)) //If promotion
+                    {
+                        while(true)
+                        {
+                            Console.Write("Promote pawn to (q / r / b / n): ");
+                            string? promotionPieceInput = Console.ReadLine()?.Trim().ToLower();
+                            
+                            if(promotionPieceInput == null)
+                            {
+                                Console.WriteLine("No input");
+                                continue;
+                            }
+                            if (promotionPieceInput == "q" || promotionPieceInput == "r" || promotionPieceInput == "b" || promotionPieceInput == "n")
+                            {
+                                GameLogic.ApplyMove(board, move, promotionPieceInput[0]);
+                                break;
+                            }
+                            else
+                            {
+                                Console.WriteLine("Invalid input");
+                                continue;
+                            }
+                            
+                        }
+                    }
+                    else
+                    {
+                        GameLogic.ApplyMove(board, move);
+                    }
+                    
+                    break;                        
                 }        
             }       
         }

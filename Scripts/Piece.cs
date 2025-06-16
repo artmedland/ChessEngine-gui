@@ -1,5 +1,3 @@
-using System.Runtime;
-
 public abstract class Piece
 {
     public PieceColor Color { get; set; }
