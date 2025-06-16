@@ -29,6 +29,16 @@ public struct Coordinate
     {
         return !(a == b);
     }
+    
+    public static Coordinate operator +(Coordinate a, Coordinate b)
+    {
+        return new(a.Col + b.Col, a.Row + b.Row);
+    }
+    
+    public static Coordinate operator -(Coordinate a, Coordinate b)
+    {
+        return new(a.Col - b.Col, a.Row - b.Row);
+    }
 
     public override readonly bool Equals(object? obj)
     {

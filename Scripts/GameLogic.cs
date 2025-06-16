@@ -67,7 +67,13 @@ public static class GameLogic
 
         Piece piece = board.pieces[move.From.Col, move.From.Row]!;
 
-        return piece.Color == board.CurrentTurn;
+        if (piece.Color != board.CurrentTurn)
+            return false;
+        
+        if (!piece.GetLegalMoves(board, move.From).Contains(move)) //todo use hashset maybe
+            return false;
+
+        return true;
     }
     
     public static bool IsLegalPosition(Board board)
@@ -81,6 +87,11 @@ public static class GameLogic
     }
     
     public static bool IsCheckmate(Board board, PieceColor color)
+    {
+        return true;
+    }
+    
+    public static bool IsSquareAttacked(Board board, Coordinate coordinate)
     {
         return true;
     }

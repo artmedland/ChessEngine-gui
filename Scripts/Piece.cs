@@ -7,7 +7,7 @@ public abstract class Piece
     public abstract int Value { get; }
     
     //Maybe return "to" coordinate instead, depends
-    //public abstract IEnumerable<Move> GetLegalMoves(Board board, Coordinate from); 
+    public abstract IEnumerable<Move> GetLegalMoves(Board board, Coordinate from); 
     
     public static Piece GetPieceFromSymbol(char symbol)
     {
