@@ -3,7 +3,7 @@ using System.Runtime;
 public abstract class Piece
 {
     public PieceColor Color { get; set; }
-    public bool HasMoved { get; set; } = false;
+    public bool HasMoved { get; set; } = false; //Only relevant for pawns, kings and rooks
     public abstract char UnicodeSymbol { get; }
     public abstract char AsciiSymbol { get; }
     public abstract int Value { get; }

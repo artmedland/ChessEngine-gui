@@ -54,7 +54,13 @@ Available commands:
         }   
         else if (inputLower.StartsWith("play"))
         {
-            Game(); //play playerSide FEN
+            string[] inputSplit = input.Split(' ');
+            string FEN = string.Join(" ", inputSplit.Skip(2));
+            
+            if(string.IsNullOrEmpty(FEN))
+                Game();
+            else
+                Game(FEN: FEN);
         }
         else if(inputLower == "clear")
         {
@@ -99,10 +105,24 @@ Available commands:
         return true;
     }
     
-    static void Game()
+    static void Game(string mode = "w", string FEN = Board.DefaultFEN)
     {
-        Board board = new();
-        while(true)
+        Stack<string> fenHistory = new(); //todo
+        Board board;
+        
+        try
+        {
+            board = new(FEN);
+        }
+        catch(Exception)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Invalid FEN");
+            Console.WriteLine();
+            return;
+        }
+        
+        while(true) //Game loop
         {
             Console.WriteLine();
             Console.WriteLine(board.GenerateFEN());
@@ -110,7 +130,7 @@ Available commands:
             board.Draw();
             Console.WriteLine();
             
-            while(true)
+            while(true) //Input loop
             {
                 Console.Write($"Enter move ({board.CurrentTurn}): ");
                 string? input = Console.ReadLine()?.Trim().ToLower();

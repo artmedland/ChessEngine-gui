@@ -2,9 +2,9 @@ public class Board
 {
     public Piece?[,] pieces = new Piece?[8, 8];
     public PieceColor CurrentTurn { get; set; } = PieceColor.White;
-    Coordinate? EnPassantCoordinate { get; set; } = null;
-    int HalfmoveClock { get; set; } = 0;
-    int FullmoveCounter { get; set; } = 1;
+    public Coordinate? EnPassantCoordinate { get; set; } = null;
+    public int HalfmoveClock { get; set; } = 0;
+    public int FullmoveCounter { get; set; } = 1;
     public const string DefaultFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     
     public Board(string FEN = DefaultFEN)
@@ -12,11 +12,14 @@ public class Board
         SetUpFromFEN(FEN);
     }
     
-    void SetUpFromFEN(string FEN)
+    public void SetUpFromFEN(string FEN)
     {
         string[] splitFEN = FEN.Split(' ');
         
         CurrentTurn = splitFEN[1] == "w" ? PieceColor.White : PieceColor.Black;
+        HalfmoveClock = int.Parse(splitFEN[4]);
+        FullmoveCounter = int.Parse(splitFEN[5]);
+        EnPassantCoordinate = splitFEN[3] == "-" ? null : new Coordinate(splitFEN[3]);
         
         string FENpieces = splitFEN[0];        
         string[] rows = FENpieces.Split('/');     
@@ -47,6 +50,76 @@ public class Board
             }
             
             y--;
+        }
+
+        string castleString = splitFEN[2];
+        if(castleString.Contains('K') || castleString.Contains('Q'))
+        {
+            if(pieces[4,0] is not King whiteKing)
+            {
+                throw new Exception("Invalid FEN");
+            }
+            else
+            {
+                whiteKing.HasMoved = false;
+            }
+            
+            if(castleString.Contains('K'))
+            {
+                if(pieces[7,0] is not Rook rookKingside)
+                {
+                    throw new Exception("Invalid FEN");
+                }
+                else
+                {
+                    rookKingside.HasMoved = false;
+                }
+            }
+            if(castleString.Contains('Q'))
+            {
+                if(pieces[7,0] is not Rook rookQueenSide)
+                {
+                    throw new Exception("Invalid FEN");
+                }
+                else
+                {
+                    rookQueenSide.HasMoved = false;
+                }
+            }
+        }
+        if(castleString.Contains('k') || castleString.Contains('q'))
+        {
+            if(pieces[4,7] is not King blackKing)
+            {
+                throw new Exception("Invalid FEN");
+            }
+            else
+            {
+                blackKing.HasMoved = false;
+            }
+            
+            if(castleString.Contains('k'))
+            {
+                if(pieces[7,7] is not Rook rookKingside)
+                {
+                    throw new Exception("Invalid FEN");
+                }
+                else
+                {
+                    rookKingside.HasMoved = false;
+                }
+            }
+            if(castleString.Contains('q'))
+            {
+                if(pieces[0,7] is not Rook rookQueenSide)
+                {
+                    throw new Exception("Invalid FEN");
+                }
+                else
+                {
+                    rookQueenSide.HasMoved = false;
+                }
+            }
         }
     }
        
