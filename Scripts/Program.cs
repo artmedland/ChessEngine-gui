@@ -10,8 +10,9 @@ Available commands:
     draw <FEN>
         Draws the chessboard using the given FEN string
 
-    play
-        Starts a new game. You may be prompted for player side and board state
+    play <MODE> <FEN>
+        Modes: w, b, e, p
+        Starts a new game
 
     use ascii
         Displays pieces using ASCII symbols: K Q R B N P
