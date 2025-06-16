@@ -2,7 +2,7 @@ using System.Reflection.Emit;
 
 public static class GameLogic
 {
-    public static void ApplyMove(Board board, Move move, char promotionPiece = 'q') //ALWAYS CHECK IF MOVE IS LEGAL BEFORE USING THIS METHOD
+    public static void ApplyMove(Board board, Move move, char promotionPieceSymbol = 'q') //ALWAYS CHECK IF MOVE IS LEGAL BEFORE USING THIS METHOD
     {                  
         Piece pieceToMove = board.pieces[move.From.Col, move.From.Row]!;
         Piece? pieceToCapture = board.pieces[move.To.Col, move.To.Row];
@@ -42,10 +42,16 @@ public static class GameLogic
             }
             else if(move.To.Col == 2) //Queenside
             {
-                board.pieces[5, move.To.Row] = board.pieces[7, move.From.Row] ;
-                board.pieces[7, move.From.Row] = null;
+                board.pieces[3, move.To.Row] = board.pieces[0, move.From.Row] ;
+                board.pieces[0, move.From.Row] = null;
             }
-        }        
+        }                
+        else if(pieceToMove is Pawn && (move.To.Row == 0 || move.To.Row == 7)) //Promotion
+        {
+            Piece promotionPiece = Piece.GetPieceFromSymbol(promotionPieceSymbol);
+            promotionPiece.Color = board.CurrentTurn;
+            board.pieces[move.To.Col, move.To.Row] = promotionPiece;         
+        }
         
         board.CurrentTurn = board.CurrentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;               
     }

@@ -124,8 +124,10 @@ Available commands:
         
         while(true) //Game loop
         {
-            Console.WriteLine();
-            Console.WriteLine(board.GenerateFEN());
+            string currentFEN = board.GenerateFEN();
+            
+            Console.WriteLine();          
+            Console.WriteLine(currentFEN);
             Console.WriteLine();
             board.Draw();
             Console.WriteLine();
@@ -146,6 +148,17 @@ Available commands:
                     Console.WriteLine("Game ended");
                     Console.WriteLine();
                     return;
+                }
+                if(input == "undo")
+                {
+                    if(fenHistory.Count == 0)
+                    {
+                        Console.WriteLine("No moves to undo");
+                        continue;
+                    }
+
+                    board.SetUpFromFEN(fenHistory.Pop());
+                    break;
                 }
 
                 Move move;
@@ -182,6 +195,7 @@ Available commands:
                 }
                 else
                 {
+                    fenHistory.Push(currentFEN);
                     GameLogic.ApplyMove(board, move);
                     break;
                 }        
