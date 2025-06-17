@@ -39,6 +39,11 @@ public struct Coordinate
     {
         return new(a.Col - b.Col, a.Row - b.Row);
     }
+    
+    public static Coordinate operator *(Coordinate a, int num)
+    {
+        return new(a.Col * num, a.Row * num);
+    }
 
     public override readonly bool Equals(object? obj)
     {

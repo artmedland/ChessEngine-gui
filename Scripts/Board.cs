@@ -44,7 +44,7 @@ public class Board
                     Piece piece = Piece.GetPieceFromSymbol(rows[i][j]);
                     piece.Color = char.IsUpper(rows[i][j]) ? PieceColor.White : PieceColor.Black;
                     
-                    if(piece is Pawn && (y == 1 || y == 7))
+                    if(piece is Pawn && (y == 1 || y == 6))
                         piece.HasMoved = false;
                     else
                         piece.HasMoved = true;
@@ -75,7 +75,7 @@ public class Board
             }
             if(castleString.Contains('Q'))
             {
-                if(pieces[7,0] is not Rook rookQueenSide)
+                if(pieces[0,0] is not Rook rookQueenSide)
                     throw new Exception("Invalid FEN");
             
                 rookQueenSide.HasMoved = false;

@@ -1,6 +1,6 @@
 public static class GameLogic
 {
-    public static void ApplyMove(Board board, Move move, char promotionPieceSymbol = 'q') //ALWAYS CHECK IF MOVE IS LEGAL BEFORE USING THIS METHOD
+    public static void ApplyMove(Board board, Move move, char promotionPieceSymbol = 'q') //THIS METHOD APPLIES MOVE EVEN IF ITS ILLEGAL
     {                  
         Piece pieceToMove = board.pieces[move.From.Col, move.From.Row]!;
         Piece? pieceToCapture = board.pieces[move.To.Col, move.To.Row];
@@ -44,7 +44,8 @@ public static class GameLogic
                 board.pieces[0, move.From.Row] = null;
             }
         }                
-        else if(pieceToMove is Pawn && (move.To.Row == 0 || move.To.Row == 7)) //Promotion
+        //Promotion
+        if(pieceToMove is Pawn && (move.To.Row == 0 || move.To.Row == 7)) 
         {
             Piece promotionPiece = Piece.GetPieceFromSymbol(promotionPieceSymbol);
             promotionPiece.Color = board.CurrentTurn;
@@ -70,7 +71,7 @@ public static class GameLogic
         if (piece.Color != board.CurrentTurn)
             return false;
         
-        if (!piece.GetLegalMoves(board, move.From).Contains(move)) //todo use hashset maybe
+        if (!piece.GetPseudoLegalMoves(board, move.From).Contains(move)) //todo use hashset maybe
             return false;
 
         return true;
@@ -91,9 +92,60 @@ public static class GameLogic
         return true;
     }
     
-    public static bool IsSquareAttacked(Board board, Coordinate coordinate)
+    public static bool IsSquareAttacked(Board board, Coordinate coordinate, PieceColor attackingSide)
     {
-        return true;
+        foreach(Coordinate attackedSquare in GetAllAttackedSquares(board, attackingSide))
+        {
+            if(attackedSquare == coordinate)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static IEnumerable<Coordinate> GetAllAttackedSquares(Board board, PieceColor attackingSide)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if(board.pieces[i, j] is Piece piece && piece.Color == attackingSide)
+                {
+                    if(piece is Pawn pawn)
+                    {
+                        foreach(Move move in pawn.GetAttackingSquares(board, new(i, j)))
+                        {
+                            yield return move.To;
+                        }
+                    }
+                    else
+                    {
+                        foreach(Move move in piece.GetPseudoLegalMoves(board, new(i, j)))
+                        {
+                            yield return move.To;
+                        }   
+                    }                      
+                }                           
+            }
+        }
+    }
+    
+    public static IEnumerable<Move> GetAllPseudoLegalMoves(Board board)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if(board.pieces[i, j] is Piece piece && piece.Color == board.CurrentTurn)
+                {
+                    foreach(Move move in piece.GetPseudoLegalMoves(board, new(i, j)))
+                    {
+                        yield return move;
+                    }   
+                }                           
+            }
+        }
     }
     
     static bool CheckEnPassantOpportunity(Piece pieceToMove, Move move, Board board, int pawnDirection, out Coordinate target)
@@ -126,5 +178,32 @@ public static class GameLogic
     public static bool IsOnBoard(Coordinate coord)
     {
         return coord.Col is >= 0 and <= 7 && coord.Row is >= 0 and <= 7;
+    }
+
+    public static IEnumerable<Move> GetSlidingMoves(Board board, Coordinate from, Coordinate[] directions, int distance)
+    {
+        foreach(var direction in directions)
+        {            
+            while(true)
+            {
+                Coordinate to = from + direction * distance;
+                
+                if(!IsOnBoard(to))
+                    break;
+                       
+                if(board.pieces[to.Col, to.Row] is Piece piece)
+                {
+                    if(piece.Color == board.CurrentTurn)
+                        break;
+
+                    yield return new(from, to);      
+                    break;
+                }
+                
+                yield return new(from, to); 
+
+                distance++;
+            }
+        }
     }
 }

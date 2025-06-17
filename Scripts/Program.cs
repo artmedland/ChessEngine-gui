@@ -151,7 +151,7 @@ Available commands:
                     Console.WriteLine();
                     return;
                 }
-                if(input == "undo")
+                if(input == "undo" || input == "u")
                 {
                     if(fenHistory.Count == 0)
                     {
@@ -273,6 +273,3 @@ Available commands:
         }
     }
 }
-
-
-

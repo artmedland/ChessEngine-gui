@@ -15,7 +15,7 @@ public class Knight : Piece
         new Coordinate(-2, -1)
     ];
     
-    public override IEnumerable<Move> GetLegalMoves(Board board, Coordinate from)
+    public override IEnumerable<Move> GetPseudoLegalMoves(Board board, Coordinate from)
     {
         foreach(Coordinate offset in KnightMoves)
         {
@@ -26,9 +26,7 @@ public class Knight : Piece
             
             if(board.pieces[to.Col, to.Row] is Piece piece && piece.Color == board.CurrentTurn)
                 continue;
-            
-            //todo Check if position causes check
-            
+                        
             yield return new Move(from, to);               
         }
     }
