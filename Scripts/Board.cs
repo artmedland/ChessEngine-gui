@@ -217,4 +217,25 @@ public class Board
         Console.ResetColor();
         Console.WriteLine();      
     }
+
+    public Board Clone()
+    {
+        Board newBoard = new Board();
+        
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                newBoard.pieces[i, j] = this.pieces[i, j]?.Clone();
+            }
+        }
+
+        newBoard.CurrentTurn = this.CurrentTurn;
+        newBoard.EnPassantCoordinate = this.EnPassantCoordinate;
+        newBoard.HalfmoveClock = this.HalfmoveClock;
+        newBoard.FullmoveCounter = this.FullmoveCounter;
+
+        return newBoard;
+    }
+  
 }

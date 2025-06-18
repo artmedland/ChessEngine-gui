@@ -30,4 +30,22 @@ public class Knight : Piece
             yield return new Move(from, to);               
         }
     }
+    
+    public override IEnumerable<Move> GetAttackingSquares(Board board, Coordinate from)
+    {
+        foreach(var move in GetPseudoLegalMoves(board, from))
+        {
+            yield return move;
+        }                       
+    }
+    
+    
+    
+    public override Piece Clone()
+    {
+        return new Knight
+        {
+            Color = this.Color,
+        };
+    }
 }

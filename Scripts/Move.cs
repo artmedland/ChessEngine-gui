@@ -9,7 +9,7 @@ public struct Move
         To = to;      
     }
     
-    public override readonly string ToString() => $"{From} -> {To}";
+    public override readonly string ToString() => $"{From} > {To}";
     
     public static bool operator ==(Move a, Move b)
     {

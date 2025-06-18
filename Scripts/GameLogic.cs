@@ -51,8 +51,8 @@ public static class GameLogic
             promotionPiece.Color = board.CurrentTurn;
             board.pieces[move.To.Col, move.To.Row] = promotionPiece;         
         }
-        
-        board.CurrentTurn = board.CurrentTurn == PieceColor.White ? PieceColor.Black : PieceColor.White;               
+
+        board.CurrentTurn = Piece.OppositeColor(board.CurrentTurn);            
     }
     
     public static bool IsLegalMove(Board board, Move move)
@@ -71,7 +71,7 @@ public static class GameLogic
         if (piece.Color != board.CurrentTurn)
             return false;
         
-        if (!piece.GetPseudoLegalMoves(board, move.From).Contains(move)) //todo use hashset maybe
+        if (!piece.GetLegalMoves(board, move.From).Contains(move))
             return false;
 
         return true;
@@ -82,9 +82,18 @@ public static class GameLogic
         return true;
     }
     
-    public static bool IsCheck(Board board, PieceColor color)
+    //returns if given side is checked
+    public static bool IsCheck(Board board, PieceColor sideChecked)
     {
-        return true;
+        PieceColor sideChecking = Piece.OppositeColor(sideChecked);
+        foreach(Coordinate attackedSquare in GetAllAttackedSquares(board, sideChecking))
+        {
+            if(board.pieces[attackedSquare.Col, attackedSquare.Row] is King king && king.Color == sideChecked)
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
     public static bool IsCheckmate(Board board, PieceColor color)
@@ -112,25 +121,35 @@ public static class GameLogic
             {
                 if(board.pieces[i, j] is Piece piece && piece.Color == attackingSide)
                 {
-                    if(piece is Pawn pawn)
+                    Coordinate from = new(i, j);
+                    
+                    foreach(Move move in piece.GetAttackingSquares(board, from))
                     {
-                        foreach(Move move in pawn.GetAttackingSquares(board, new(i, j)))
-                        {
-                            yield return move.To;
-                        }
+                        yield return move.To;
                     }
-                    else
-                    {
-                        foreach(Move move in piece.GetPseudoLegalMoves(board, new(i, j)))
-                        {
-                            yield return move.To;
-                        }   
-                    }                      
                 }                           
             }
         }
     }
     
+    public static IEnumerable<Move> GetAllLegalMoves(Board board)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if(board.pieces[i, j] is Piece piece && piece.Color == board.CurrentTurn)
+                {
+                    foreach(Move move in piece.GetLegalMoves(board, new(i, j)))
+                    {
+                        yield return move;
+                    }   
+                }                           
+            }
+        }
+    }
+    
+    /*
     public static IEnumerable<Move> GetAllPseudoLegalMoves(Board board)
     {
         for (int i = 0; i < 8; i++)
@@ -147,7 +166,7 @@ public static class GameLogic
             }
         }
     }
-    
+    */
     static bool CheckEnPassantOpportunity(Piece pieceToMove, Move move, Board board, int pawnDirection, out Coordinate target)
     {
         target = default;
@@ -180,11 +199,14 @@ public static class GameLogic
         return coord.Col is >= 0 and <= 7 && coord.Row is >= 0 and <= 7;
     }
 
-    public static IEnumerable<Move> GetSlidingMoves(Board board, Coordinate from, Coordinate[] directions, int distance)
+    public static IEnumerable<Move> GetSlidingMoves(Board board, Coordinate from, Coordinate[] directions, int maxDistance)
     {
+        PieceColor color = board.pieces[from.Col, from.Row]!.Color;
+        
         foreach(var direction in directions)
-        {            
-            while(true)
+        {
+            int distance = 1;     
+            while(distance <= maxDistance)
             {
                 Coordinate to = from + direction * distance;
                 
@@ -193,7 +215,7 @@ public static class GameLogic
                        
                 if(board.pieces[to.Col, to.Row] is Piece piece)
                 {
-                    if(piece.Color == board.CurrentTurn)
+                    if(piece.Color == color)
                         break;
 
                     yield return new(from, to);      
@@ -201,7 +223,6 @@ public static class GameLogic
                 }
                 
                 yield return new(from, to); 
-
                 distance++;
             }
         }

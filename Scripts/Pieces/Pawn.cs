@@ -1,5 +1,3 @@
-using System.IO.Compression;
-
 public class Pawn : Piece
 {
     public override char UnicodeSymbol => '♟';
@@ -43,8 +41,8 @@ public class Pawn : Piece
         }
     }
     
-    //Pawn is the only piece that attacks differently than it moves, thus this method is needed
-    public IEnumerable<Move> GetAttackingSquares(Board board, Coordinate from)
+    //Pawn and king are the only piece that attacks differently than it moves, thus this method is needed
+    public override IEnumerable<Move> GetAttackingSquares(Board board, Coordinate from)
     {
         Coordinate offset = board.CurrentTurn == PieceColor.White ? new(0, 1) : new(0, -1);
         
@@ -58,5 +56,14 @@ public class Pawn : Piece
         
         if(GameLogic.IsOnBoard(forwardRight))
              yield return new(from, forwardRight);                          
+    }
+    
+    public override Piece Clone()
+    {
+        return new Pawn
+        {
+            Color = this.Color,
+            HasMoved = this.HasMoved
+        };
     }
 }

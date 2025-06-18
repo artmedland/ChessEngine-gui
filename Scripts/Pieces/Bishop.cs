@@ -19,4 +19,20 @@ public class Bishop : Piece
             yield return move;
         }
     }
+    
+    public override IEnumerable<Move> GetAttackingSquares(Board board, Coordinate from)
+    {
+        foreach(var move in GetPseudoLegalMoves(board, from))
+        {
+            yield return move;
+        }                       
+    }
+    
+    public override Piece Clone()
+    {
+        return new Bishop
+        {
+            Color = this.Color,
+        };
+    }
 }

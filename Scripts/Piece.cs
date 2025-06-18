@@ -7,7 +7,25 @@ public abstract class Piece
     public abstract int Value { get; }
     
     //These moves can be illegal in the sense that they leave the king in check
-    public abstract IEnumerable<Move> GetPseudoLegalMoves(Board board, Coordinate from); 
+    public abstract IEnumerable<Move> GetPseudoLegalMoves(Board board, Coordinate from);
+    public abstract IEnumerable<Move> GetAttackingSquares(Board board, Coordinate from);
+    
+    //This method checks if each pseudolegal move causes a check to the moving side, making it illegal
+    public IEnumerable<Move> GetLegalMoves(Board board, Coordinate from)
+    {
+        foreach(Move move in GetPseudoLegalMoves(board, from))
+        {
+            Board tempBoard = board.Clone();
+            PieceColor sideThatMoved = tempBoard.CurrentTurn;
+            
+            GameLogic.ApplyMove(tempBoard, move);
+                       
+            if(!GameLogic.IsCheck(tempBoard, sideThatMoved))
+            {
+                yield return move;
+            }
+        }
+    }
     
     public static Piece GetPieceFromSymbol(char symbol)
     {
@@ -22,6 +40,13 @@ public abstract class Piece
             _ => throw new Exception($"Invalid piece symbol: {symbol}")
         };
     }
+    
+    public static PieceColor OppositeColor(PieceColor color)
+    {
+        return color == PieceColor.White ? PieceColor.Black : PieceColor.White;
+    }
+    
+    public abstract Piece Clone();
           
 }
 public enum PieceColor

@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using System.Threading.Channels;
 class Program
 {
     public static bool UseUnicodeSymbols { get; set; } = true;
@@ -109,7 +108,7 @@ Available commands:
     
     static void Game(string mode = "w", string FEN = Board.DefaultFEN)
     {
-        Stack<string> fenHistory = new(); //todo
+        Stack<string> FENhistory = new(); //todo
         Board board;
         
         try
@@ -130,108 +129,17 @@ Available commands:
             
             Console.WriteLine();          
             Console.WriteLine(currentFEN);
+            if(GameLogic.IsCheck(board, board.CurrentTurn))
+                Console.WriteLine("Check");
+            
             Console.WriteLine();
             board.Draw();
             Console.WriteLine();
-            
-            while(true) //Input loop
+            if(!ApplyPlayerMove(board, currentFEN, FENhistory))
             {
-                Console.Write($"Enter move ({board.CurrentTurn}): ");
-                string? input = Console.ReadLine()?.Trim().ToLower();
-                
-                if(input == null)
-                {
-                    Console.WriteLine("No input");
-                    continue;
-                }
-                if(input == "stop" || input == "end")
-                {
-                    Console.WriteLine();
-                    Console.WriteLine("Game ended");
-                    Console.WriteLine();
-                    return;
-                }
-                if(input == "undo" || input == "u")
-                {
-                    if(fenHistory.Count == 0)
-                    {
-                        Console.WriteLine("No moves to undo");
-                        continue;
-                    }
-
-                    board.SetUpFromFEN(fenHistory.Pop());
-                    break;
-                }
-
-                Move move;
-                
-                try
-                {
-                    Coordinate fromCoordinate;
-                    Coordinate toCoordinate;
-                
-                    if(input.Length == 4)
-                    {
-                        fromCoordinate = new(input.Substring(0, 2));
-                        toCoordinate = new(input.Substring(2, 2));                    
-                    }
-                    else
-                    {
-                        string[] coordinates = input.Split(' ');
-                        fromCoordinate = new(coordinates[0]);
-                        toCoordinate = new(coordinates[1]);    
-                    }
-
-                    move = new(fromCoordinate, toCoordinate);
-                }
-                catch(Exception)
-                {
-                    Console.WriteLine("Invalid input");
-                    continue;
-                }
-                
-                if(!GameLogic.IsLegalMove(board, move))
-                {
-                    Console.WriteLine("Illegal move");
-                    continue;
-                }
-                else
-                {
-                    fenHistory.Push(currentFEN);
-                    
-                    if(board.pieces[move.From.Col, move.From.Row] is Pawn && (move.To.Row == 0 || move.To.Row == 7)) //If promotion
-                    {
-                        while(true)
-                        {
-                            Console.Write("Promote pawn to (q / r / b / n): ");
-                            string? promotionPieceInput = Console.ReadLine()?.Trim().ToLower();
-                            
-                            if(promotionPieceInput == null)
-                            {
-                                Console.WriteLine("No input");
-                                continue;
-                            }
-                            if (promotionPieceInput == "q" || promotionPieceInput == "r" || promotionPieceInput == "b" || promotionPieceInput == "n")
-                            {
-                                GameLogic.ApplyMove(board, move, promotionPieceInput[0]);
-                                break;
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid input");
-                                continue;
-                            }
-                            
-                        }
-                    }
-                    else
-                    {
-                        GameLogic.ApplyMove(board, move);
-                    }
-                    
-                    break;                        
-                }        
-            }       
+                break;
+            }
+           
         }
     }   
 
@@ -257,6 +165,119 @@ Available commands:
         }
     }
 
+    static bool ApplyPlayerMove(Board board, string currentFEN, Stack<string> fenHistory)
+    {
+        while(true) //Input loop
+        {
+            Console.Write($"Enter move ({board.CurrentTurn}): ");
+            string? input = Console.ReadLine()?.Trim().ToLower();
+            
+            if(input == null)
+            {
+                Console.WriteLine("No input");
+                continue;
+            }
+            if(input == "stop" || input == "end")
+            {
+                Console.WriteLine();
+                Console.WriteLine("Game ended");
+                Console.WriteLine();
+                return false;
+            }
+            if(input == "undo" || input == "u")
+            {
+                if(fenHistory.Count == 0)
+                {
+                    Console.WriteLine("No moves to undo");
+                    continue;
+                }
+
+                board.SetUpFromFEN(fenHistory.Pop());
+                break;
+            }
+            if(input == "get moves")
+            {
+                Console.WriteLine();
+                foreach(Move m in GameLogic.GetAllLegalMoves(board))
+                    Console.WriteLine(m);
+                Console.WriteLine();
+                continue;
+            }
+
+            Move move;
+            
+            try
+            {
+                Coordinate fromCoordinate;
+                Coordinate toCoordinate;
+            
+                if(input.Length == 4)
+                {
+                    fromCoordinate = new(input.Substring(0, 2));
+                    toCoordinate = new(input.Substring(2, 2));                    
+                }
+                else
+                {
+                    string[] coordinates = input.Split(' ');
+                    fromCoordinate = new(coordinates[0]);
+                    toCoordinate = new(coordinates[1]);    
+                }
+
+                move = new(fromCoordinate, toCoordinate);
+            }
+            catch(Exception)
+            {
+                Console.WriteLine("Invalid input");
+                continue;
+            }
+            
+            if(!GameLogic.IsLegalMove(board, move))
+            {
+                Console.WriteLine("Illegal move");
+                continue;
+            }
+            else
+            {
+                fenHistory.Push(currentFEN);
+                
+                if(board.pieces[move.From.Col, move.From.Row] is Pawn && (move.To.Row == 0 || move.To.Row == 7)) //If promotion
+                {
+                    while(true)
+                    {
+                        Console.Write("Promote pawn to (q / r / b / n): ");
+                        string? promotionPieceInput = Console.ReadLine()?.Trim().ToLower();
+                        
+                        if(promotionPieceInput == null)
+                        {
+                            Console.WriteLine("No input");
+                            continue;
+                        }
+                        if (promotionPieceInput == "q" || promotionPieceInput == "r" || promotionPieceInput == "b" || promotionPieceInput == "n")
+                        {
+                            GameLogic.ApplyMove(board, move, promotionPieceInput[0]);
+                            break;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Invalid input");
+                            continue;
+                        }
+                        
+                    }
+                }
+                else
+                {
+                    GameLogic.ApplyMove(board, move);
+                }
+                
+                break;                        
+            }      
+        }
+        
+        return true;     
+    }
+
+    
     static void DrawBoard(string input)
     {
         try
