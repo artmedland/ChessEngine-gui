@@ -138,8 +138,7 @@ Available commands:
             if(!ApplyPlayerMove(board, currentFEN, FENhistory))
             {
                 break;
-            }
-           
+            }      
         }
     }   
 
