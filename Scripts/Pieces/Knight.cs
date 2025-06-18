@@ -24,7 +24,7 @@ public class Knight : Piece
             if(!GameLogic.IsOnBoard(to))
                 continue;
             
-            if(board.pieces[to.Col, to.Row] is Piece piece && piece.Color == board.CurrentTurn)
+            if(board.pieces[to.Col, to.Row] is Piece piece && piece.Color == this.Color)
                 continue;
                         
             yield return new Move(from, to);               

@@ -16,7 +16,7 @@ public class Pawn : Piece
             
             Coordinate twoForward = oneForward + offset;
             
-            if(board.pieces[twoForward.Col, twoForward.Row] == null && !board.pieces[from.Col, from.Row]!.HasMoved)
+            if(!board.pieces[from.Col, from.Row]!.HasMoved && board.pieces[twoForward.Col, twoForward.Row] == null)
             {
                 yield return new(from, twoForward);
             }
@@ -27,14 +27,14 @@ public class Pawn : Piece
         
         if(GameLogic.IsOnBoard(forwardLeft))
         {
-            if((board.pieces[forwardLeft.Col, forwardLeft.Row] is Piece piece && piece.Color != board.CurrentTurn) || forwardLeft == board.EnPassantCoordinate)
+            if((board.pieces[forwardLeft.Col, forwardLeft.Row] is Piece piece && piece.Color != this.Color) || forwardLeft == board.EnPassantCoordinate)
             {
                 yield return new(from, forwardLeft);
             }
         }
         if(GameLogic.IsOnBoard(forwardRight))
         {
-            if((board.pieces[forwardRight.Col, forwardRight.Row] is Piece piece && piece.Color != board.CurrentTurn) || forwardRight == board.EnPassantCoordinate)
+            if((board.pieces[forwardRight.Col, forwardRight.Row] is Piece piece && piece.Color != this.Color) || forwardRight == board.EnPassantCoordinate)
             {
                 yield return new(from, forwardRight);
             }

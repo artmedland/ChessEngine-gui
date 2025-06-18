@@ -58,7 +58,6 @@ Available commands:
         else if (inputLower.StartsWith("play"))
         {
             string[] inputSplit = input.Split(' ');
-            Console.WriteLine(inputSplit.Length);
                   
             if(inputSplit.Length == 1)
             {
@@ -67,7 +66,6 @@ Available commands:
             else if(inputSplit.Length == 2)
             {
                 char mode = inputSplit[1].ToLower()[0];
-                Console.WriteLine(mode);
                 StartGame(mode);
             }            
             else
@@ -152,6 +150,9 @@ Available commands:
             case Mode.pVe:
                 PlayerVEngineGame(board, playerSide);
                 break;
+            case Mode.eVe:
+                EngineVEngineGame(board);
+                break;
         }
     }
     
@@ -183,6 +184,43 @@ Available commands:
             if(!ApplyPlayerMove(board, currentFEN, FENhistory))
                 return;      
         }
+    }
+    
+    static void EngineVEngineGame(Board board)
+    {
+        Engine engine = new();
+        
+        while(true) //Game loop
+        {             
+            string currentFEN = board.GenerateFEN();
+            
+            Console.WriteLine();          
+            Console.WriteLine(currentFEN);  
+            Console.WriteLine();
+            board.Draw();
+            Console.WriteLine();
+            
+            if(GameLogic.IsCheckmate(board))
+            {
+                Console.WriteLine("Checkmate");
+                Console.WriteLine();
+                return;
+            }
+            if(GameLogic.IsStalemate(board))
+            {
+                Console.WriteLine("Stalemate");
+                Console.WriteLine();
+                return;
+            }
+            if(GameLogic.IsDraw(board))
+            {
+                Console.WriteLine("Draw");
+                Console.WriteLine();
+                return;
+            }
+            
+            engine.MakeMove(board);
+        }           
     }
     
     static void PlayerVEngineGame(Board board, PieceColor playerSide)

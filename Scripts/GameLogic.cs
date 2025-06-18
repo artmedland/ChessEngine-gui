@@ -98,12 +98,27 @@ public static class GameLogic
     
     public static bool IsStalemate(Board board)
     {
-        return !GetAllLegalMoves(board).Any();
+        return !GetAllLegalMoves(board).Any() && !IsCheck(board, board.CurrentTurn);
     }
     
     public static bool IsCheckmate(Board board)
     {
         return IsCheck(board, board.CurrentTurn) && !GetAllLegalMoves(board).Any();
+    }
+    
+    public static bool IsDraw(Board board)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if(board.pieces[i, j] is Piece piece && piece is not King)
+                {
+                    return false;
+                }                           
+            }
+        }
+        return true;
     }
     
     public static bool IsSquareAttacked(Board board, Coordinate coordinate, PieceColor attackingSide)
