@@ -10,7 +10,9 @@ Available commands:
         Draws the chessboard using the given FEN string
 
     play <MODE> <FEN>
-        Modes: w, b, e, p
+        Modes: w, b, p, e
+        Move example: e2 e4
+        Commands: undo, get moves, end
         Starts a new game
 
     use ascii
@@ -56,12 +58,25 @@ Available commands:
         else if (inputLower.StartsWith("play"))
         {
             string[] inputSplit = input.Split(' ');
-            string FEN = string.Join(" ", inputSplit.Skip(2));
-            
-            if(string.IsNullOrEmpty(FEN))
-                Game();
+            Console.WriteLine(inputSplit.Length);
+                  
+            if(inputSplit.Length == 1)
+            {
+                StartGame();
+            }               
+            else if(inputSplit.Length == 2)
+            {
+                char mode = inputSplit[1].ToLower()[0];
+                Console.WriteLine(mode);
+                StartGame(mode);
+            }            
             else
-                Game(FEN: FEN);
+            {
+                char mode = inputSplit[1][0];
+                string FEN = string.Join(" ", inputSplit.Skip(2));
+                StartGame(mode, FEN);
+            }
+                
         }
         else if(inputLower == "clear")
         {
@@ -106,41 +121,109 @@ Available commands:
         return true;
     }
     
-    static void Game(string mode = "w", string FEN = Board.DefaultFEN)
+    static void StartGame(char modeChar = 'w', string FEN = Board.DefaultFEN)
     {
-        Stack<string> FENhistory = new(); //todo
         Board board;
+        Mode mode;
+        PieceColor playerSide = PieceColor.White;
         
         try
         {
+            mode = GetMode(modeChar);
             board = new(FEN);
         }
         catch(Exception)
         {
             Console.WriteLine();
-            Console.WriteLine("Invalid FEN");
+            Console.WriteLine("Invalid input");
             Console.WriteLine();
             return;
         }
         
-        while(true) //Game loop
+        if(mode == Mode.pVe)
+            playerSide = modeChar == 'w' ? PieceColor.White : PieceColor.Black; 
+        
+        
+        switch(mode)
         {
+            case Mode.pVp:
+                PlayerVPlayerGame(board);
+                break;
+            case Mode.pVe:
+                PlayerVEngineGame(board, playerSide);
+                break;
+        }
+    }
+    
+    static void PlayerVPlayerGame(Board board)
+    {
+        Stack<string> FENhistory = new();   
+        while(true) //Game loop
+        {        
             string currentFEN = board.GenerateFEN();
             
             Console.WriteLine();          
-            Console.WriteLine(currentFEN);
-            if(GameLogic.IsCheck(board, board.CurrentTurn))
-                Console.WriteLine("Check");
+            Console.WriteLine(currentFEN);        
             
             Console.WriteLine();
             board.Draw();
             Console.WriteLine();
-            if(!ApplyPlayerMove(board, currentFEN, FENhistory))
+            
+            if(GameLogic.IsCheckmate(board))
             {
-                break;
+                Console.WriteLine("Checkmate");
+                return;
+            }
+            if(GameLogic.IsStalemate(board))
+            {
+                Console.WriteLine("Stalemate");
+                return;
             }      
+            
+            if(!ApplyPlayerMove(board, currentFEN, FENhistory))
+                return;      
         }
-    }   
+    }
+    
+    static void PlayerVEngineGame(Board board, PieceColor playerSide)
+    {
+        Stack<string> FENhistory = new();
+        Engine engine = new();
+
+        while(true) //Game loop
+        {             
+            string currentFEN = board.GenerateFEN();
+            
+            Console.WriteLine();          
+            Console.WriteLine(currentFEN);  
+            Console.WriteLine();
+            board.Draw();
+            Console.WriteLine();
+            
+            if(GameLogic.IsCheckmate(board))
+            {
+                Console.WriteLine("Checkmate");
+                Console.WriteLine();
+                return;
+            }
+            if(GameLogic.IsStalemate(board))
+            {
+                Console.WriteLine("Stalemate");
+                Console.WriteLine();
+                return;
+            }              
+        
+            if(board.CurrentTurn == playerSide)
+            {
+                if(!ApplyPlayerMove(board, currentFEN, FENhistory))
+                    break; 
+            }
+            else
+            {
+                engine.MakeMove(board);
+            }           
+        }
+    }
 
     static void PromptSymbolStyle()
     {
@@ -291,5 +374,24 @@ Available commands:
         {
             Console.WriteLine(e);
         }
+    }
+    
+    static Mode GetMode(char c)
+    {
+        return c.ToString().ToLower() switch
+        {
+            "w" => Mode.pVe,
+            "b" => Mode.pVe,
+            "e" => Mode.eVe,
+            "p" => Mode.pVp,
+            _ => throw new Exception("Invalid mode")
+        };
+    }
+    
+    enum Mode
+    {
+        pVp,
+        pVe,
+        eVe,
     }
 }

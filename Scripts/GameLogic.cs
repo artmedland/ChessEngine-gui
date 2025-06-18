@@ -96,9 +96,14 @@ public static class GameLogic
         return false;
     }
     
-    public static bool IsCheckmate(Board board, PieceColor color)
+    public static bool IsStalemate(Board board)
     {
-        return true;
+        return !GetAllLegalMoves(board).Any();
+    }
+    
+    public static bool IsCheckmate(Board board)
+    {
+        return IsCheck(board, board.CurrentTurn) && !GetAllLegalMoves(board).Any();
     }
     
     public static bool IsSquareAttacked(Board board, Coordinate coordinate, PieceColor attackingSide)
