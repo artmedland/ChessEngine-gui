@@ -1,3 +1,4 @@
+
 public class Engine
 {
 
@@ -14,24 +15,26 @@ public class Engine
             Board tempBoard = board.Clone();
             GameLogic.ApplyMove(tempBoard, move);
 
-            float score = AlphaBeta(tempBoard, depth - 1, float.MinValue, float.MaxValue, Piece.OppositeColor(board.CurrentTurn), board.CurrentTurn);
-            
+            float score = AlphaBeta(tempBoard, depth - 1, float.MinValue, float.MaxValue, tempBoard.CurrentTurn, board.CurrentTurn);
+            Console.WriteLine($"Move {move} scored {score}");
             if(score > bestScore)
             {
                 bestScore = score;
                 bestMove = move;
+                Console.WriteLine($"New best move: {move} with score {score}");
             }
         }
         
+        Console.WriteLine($"Chosen move: {bestMove} with score {bestScore}");
         return bestMove ?? throw new Exception("No legal moves found");
     }
     
-    float AlphaBeta(Board board, int depth, float alpha, float beta, PieceColor side, PieceColor originalSide)
+    float AlphaBeta(Board board, int depth, float alpha, float beta, PieceColor side, PieceColor rootSide)
     {
         if(depth == 0 || GameLogic.IsGameOver(board))
-            return Evaluate(board, originalSide);
+            return Evaluate(board, rootSide);
         
-        if(side == PieceColor.White)
+        if(side == rootSide)
         {
             float maxEval = float.MinValue;
             
@@ -39,7 +42,7 @@ public class Engine
             {
                 Board tempboard = board.Clone();
                 GameLogic.ApplyMove(tempboard, move);
-                float eval = AlphaBeta(tempboard, depth - 1, alpha, beta, PieceColor.Black, originalSide);
+                float eval = AlphaBeta(tempboard, depth - 1, alpha, beta, tempboard.CurrentTurn, rootSide);
                 maxEval = Math.Max(maxEval, eval);
                 alpha = Math.Max(alpha, eval);                 
         
@@ -58,7 +61,7 @@ public class Engine
             {
                 Board tempboard = board.Clone();
                 GameLogic.ApplyMove(tempboard, move);
-                float eval = AlphaBeta(tempboard, depth - 1, alpha, beta, PieceColor.White, originalSide);
+                float eval = AlphaBeta(tempboard, depth - 1, alpha, beta, tempboard.CurrentTurn, rootSide);
                 minEval = Math.Min(minEval, eval);
                 beta = Math.Min(beta, eval);
                 
@@ -126,6 +129,8 @@ public class Engine
     {
         Board tempBoard = board.Clone();
         GameLogic.ApplyMove(tempBoard, move);
-        return Evaluate(tempBoard, board.CurrentTurn);
+        float eval = Evaluate(tempBoard, board.CurrentTurn);
+
+        return eval;
     }
 }

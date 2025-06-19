@@ -174,9 +174,9 @@ public static class GameLogic
         }
     }
     
-    public static int GetMaterialBalance(Board board)
+    public static float GetMaterialBalance(Board board)
     {
-        int num = 0;
+        float num = 0;
         
         for(int i = 0; i < 8; i++)
         {
