@@ -2,7 +2,7 @@ public class Bishop : Piece
 {
     public override char UnicodeSymbol => '♝';
     public override char AsciiSymbol => Color == PieceColor.White ? 'B' : 'b';
-    public override int Value => 3;
+    public override int Value => Color == PieceColor.White ? 3 : -3;
     
     static readonly Coordinate[] directions =
     [

@@ -2,7 +2,7 @@ public class Knight : Piece
 {
     public override char UnicodeSymbol => '♞';
     public override char AsciiSymbol => Color == PieceColor.White ? 'N' : 'n';
-    public override int Value => 3;
+    public override int Value => Color == PieceColor.White ? 3 : -3;
     static readonly Coordinate[] KnightMoves =
     [
         new Coordinate(1, 2),

@@ -2,7 +2,7 @@ public class Pawn : Piece
 {
     public override char UnicodeSymbol => '♟';
     public override char AsciiSymbol => Color == PieceColor.White ? 'P' : 'p';
-    public override int Value => 1;
+    public override int Value => Color == PieceColor.White ? 1 : -1;
     
     public override IEnumerable<Move> GetPseudoLegalMoves(Board board, Coordinate from)
     {

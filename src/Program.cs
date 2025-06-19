@@ -10,10 +10,10 @@ Available commands:
         Draws the chessboard using the given FEN string
 
     play <MODE> <FEN>
+        Starts a new game
         Modes: w, b, p, e
         Move example: e2 e4
         Commands: undo, get moves, end
-        Starts a new game
 
     use ascii
         Displays pieces using ASCII symbols: K Q R B N P
@@ -164,7 +164,8 @@ Available commands:
             string currentFEN = board.GenerateFEN();
             
             Console.WriteLine();          
-            Console.WriteLine(currentFEN);        
+            Console.WriteLine(currentFEN);
+            Console.WriteLine(GameLogic.GetMaterialBalance(board));    
             
             Console.WriteLine();
             board.Draw();
@@ -196,6 +197,7 @@ Available commands:
             
             Console.WriteLine();          
             Console.WriteLine(currentFEN);  
+            Console.WriteLine(GameLogic.GetMaterialBalance(board));    
             Console.WriteLine();
             board.Draw();
             Console.WriteLine();
@@ -219,7 +221,7 @@ Available commands:
                 return;
             }
             
-            engine.MakeMove(board);
+            GameLogic.ApplyMove(board, engine.GetBestMove(board));
         }           
     }
     
@@ -234,6 +236,7 @@ Available commands:
             
             Console.WriteLine();          
             Console.WriteLine(currentFEN);  
+            Console.WriteLine(GameLogic.GetMaterialBalance(board)); 
             Console.WriteLine();
             board.Draw();
             Console.WriteLine();
@@ -258,7 +261,7 @@ Available commands:
             }
             else
             {
-                engine.MakeMove(board);
+                GameLogic.ApplyMove(board, engine.GetBestMove(board));
             }           
         }
     }

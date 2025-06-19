@@ -2,7 +2,7 @@ public class Queen : Piece
 {
     public override char UnicodeSymbol => '♛';
     public override char AsciiSymbol => Color == PieceColor.White ? 'Q' : 'q';
-    public override int Value => 9;
+    public override int Value => Color == PieceColor.White ? 9 : -9;
     
     static readonly Coordinate[] directions =
     [

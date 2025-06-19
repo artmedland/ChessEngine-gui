@@ -106,6 +106,11 @@ public static class GameLogic
         return IsCheck(board, board.CurrentTurn) && !GetAllLegalMoves(board).Any();
     }
     
+    public static bool IsGameOver(Board board)
+    {
+        return IsStalemate(board) || IsCheckmate(board);
+    }
+    
     public static bool IsDraw(Board board)
     {
         for (int i = 0; i < 8; i++)
@@ -169,24 +174,24 @@ public static class GameLogic
         }
     }
     
-    /*
-    public static IEnumerable<Move> GetAllPseudoLegalMoves(Board board)
+    public static int GetMaterialBalance(Board board)
     {
-        for (int i = 0; i < 8; i++)
+        int num = 0;
+        
+        for(int i = 0; i < 8; i++)
         {
-            for (int j = 0; j < 8; j++)
+            for(int j = 0; j < 8; j++)
             {
-                if(board.pieces[i, j] is Piece piece && piece.Color == board.CurrentTurn)
-                {
-                    foreach(Move move in piece.GetPseudoLegalMoves(board, new(i, j)))
-                    {
-                        yield return move;
-                    }   
-                }                           
+                if(board.pieces[i, j] == null)
+                    continue;
+
+                num += board.pieces[i, j]!.Value;
             }
         }
+
+        return num;
     }
-    */
+    
     static bool CheckEnPassantOpportunity(Piece pieceToMove, Move move, Board board, int pawnDirection, out Coordinate target)
     {
         target = default;
