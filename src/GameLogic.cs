@@ -47,7 +47,7 @@ public static class GameLogic
         //Promotion
         if(pieceToMove is Pawn && (move.To.Row == 0 || move.To.Row == 7)) 
         {
-            Piece promotionPiece = Piece.GetPieceFromSymbol(promotionPieceSymbol);
+            Piece promotionPiece = Piece.GetPieceFromSymbol(promotionPieceSymbol); //todo: constructor for piece
             promotionPiece.Color = board.CurrentTurn;
             board.pieces[move.To.Col, move.To.Row] = promotionPiece;         
         }

@@ -1,6 +1,9 @@
 public class Board
 {
     public Piece?[,] pieces = new Piece?[8, 8];
+    Stack<MoveHistoryEntry> moveHistory = new();
+    public List<Coordinate> WhitePieceCoords { get; private set; } = new();
+    public List<Coordinate> BlackPieceCoords { get; private set; } = new();
     public PieceColor CurrentTurn { get; set; } = PieceColor.White;
     public Coordinate? EnPassantCoordinate { get; set; } = null;
     public int HalfmoveClock { get; set; } = 0;
@@ -173,6 +176,10 @@ public class Board
         return $"{FENpieces} {FENturn} {castleString} {FENenPassantCoordinate} {HalfmoveClock} {FullmoveCounter}";
     }
     
+    public void Undo()
+    {
+        
+    }
     public void Draw()
     {
         for (int row = 7; row >= 0; row--)
@@ -218,7 +225,7 @@ public class Board
         Console.WriteLine();      
     }
 
-    public Board Clone()
+    public Board Clone() //todo: use undo instead of this for efficiency
     {
         Board newBoard = new Board();
         

@@ -1,6 +1,13 @@
 
 public class Engine
 {
+    static readonly Coordinate[] centerSquares =
+    {
+        new(3, 3),
+        new(3, 4),
+        new(4, 3),
+        new(4, 4)
+    };
 
     public Move GetBestMove(Board board, int depth = 4)
     {
@@ -84,9 +91,14 @@ public class Engine
 
         float finalScore = 0;
         
+        //Coordinate[] squaresAttackedByWhite = GameLogic.GetAllAttackedSquares(board, PieceColor.White).ToArray();
+        //Coordinate[] squaresAttackedByBlack = GameLogic.GetAllAttackedSquares(board, PieceColor.Black).ToArray();
+        
         finalScore += GameLogic.GetMaterialBalance(board);
         finalScore += GetAttackedSquaresScore(board, PieceColor.White);
         finalScore -= GetAttackedSquaresScore(board, PieceColor.Black);
+        finalScore += GetCenterPawnScore(board, PieceColor.White);
+        finalScore -= GetCenterPawnScore(board, PieceColor.Black);
         
         return side == PieceColor.White ? finalScore : -finalScore; 
     }
@@ -97,32 +109,22 @@ public class Engine
         
         foreach(Coordinate square in GameLogic.GetAllAttackedSquares(board, side))
         {
-            if(side == PieceColor.White)
-            {
-                score += 0.01f;
-                
-                if(square.Row > 3 && square.Row < 6 && square.Col > 1 && square.Col < 6)
-                {
-                    score += 0.01f;
-                    
-                    if(square.Row == 4 && (square.Col == 3 || square.Col == 4))
-                        score += 0.02f;
-                }
-            }
-            else
-            {
-                score += 0.01f;
-
-                if(square.Row > 1 && square.Row < 4 && square.Col > 1 && square.Col < 6)
-                {
-                    score += 0.01f;
-                    
-                    if(square.Row == 3 && (square.Col == 3 || square.Col == 4))
-                        score += 0.02f;
-                }        
-            }
+            score += 0.001f;
         }
-        return Math.Clamp(score, 0, 0.5f);
+        return score;
+    }
+    
+    float GetCenterPawnScore(Board board, PieceColor side)
+    {
+        float score = 0;
+        
+        foreach (var coord in centerSquares)
+        {
+            if (board.pieces[coord.Col, coord.Row] is Pawn pawn && pawn.Color == side)
+                score += 0.02f;
+        }
+        
+        return score;
     }
 
     float ScoreMove(Board board, Move move)
