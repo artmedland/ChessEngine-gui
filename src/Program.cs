@@ -309,13 +309,13 @@ Available commands:
             }
             if(input == "undo" || input == "u")
             {
-                if(fenHistory.Count == 0)
+                if(board.moveHistory.Count == 0)
                 {
                     Console.WriteLine("No moves to undo");
                     continue;
                 }
 
-                board.SetUpFromFEN(fenHistory.Pop());
+                board.Undo();
                 break;
             }
             if(input == "get moves")

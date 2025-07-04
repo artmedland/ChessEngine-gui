@@ -13,17 +13,21 @@ public abstract class Piece
     //This method checks if each pseudolegal move causes a check to the moving side, making it illegal
     public IEnumerable<Move> GetLegalMoves(Board board, Coordinate from)
     {
+        PieceColor sideThatMoved = board.CurrentTurn;
+
         foreach(Move move in GetPseudoLegalMoves(board, from))
-        {
-            Board tempBoard = board.Clone();
-            PieceColor sideThatMoved = tempBoard.CurrentTurn;
-            
-            GameLogic.ApplyMove(tempBoard, move);
+        {            
+            GameLogic.ApplyMove(board, move);
                        
-            if(!GameLogic.IsCheck(tempBoard, sideThatMoved))
+            if(!GameLogic.IsCheck(board, sideThatMoved))
             {
+                board.Undo();
                 yield return move;
             }
+            else
+            {
+                board.Undo(); 
+            }                     
         }
     }
     

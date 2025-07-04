@@ -1,7 +1,7 @@
 public class Board
 {
     public Piece?[,] pieces = new Piece?[8, 8];
-    Stack<MoveHistoryEntry> moveHistory = new();
+    public Stack<MoveHistoryEntry> moveHistory = new();
     public List<Coordinate> WhitePieceCoords { get; private set; } = new();
     public List<Coordinate> BlackPieceCoords { get; private set; } = new();
     public PieceColor CurrentTurn { get; set; } = PieceColor.White;
@@ -176,9 +176,58 @@ public class Board
         return $"{FENpieces} {FENturn} {castleString} {FENenPassantCoordinate} {HalfmoveClock} {FullmoveCounter}";
     }
     
-    public void Undo()
+    public void Undo() //maybe move to gamelogic
     {
+        MoveHistoryEntry entry = moveHistory.Pop();
+        pieces[entry.Move.From.Col, entry.Move.From.Row] = pieces[entry.Move.To.Col, entry.Move.To.Row];
+        pieces[entry.Move.To.Col, entry.Move.To.Row] = entry.CapturedPiece;
+           
+        EnPassantCoordinate = entry.PreviousEnPassant;
+        if(entry.PreviousEnPassant != null)
+        {
+            if(entry.Move.To == entry.PreviousEnPassant && pieces[entry.Move.From.Col, entry.Move.From.Row] is Pawn) 
+            {
+                int opponentDirection = entry.PreviousTurn == PieceColor.White ? -1 : 1;
+                pieces[entry.PreviousEnPassant.Value.Col, entry.PreviousEnPassant.Value.Row + opponentDirection] = new Pawn
+                {
+                    Color = Piece.OppositeColor(entry.PreviousTurn),
+                    HasMoved = true
+                }; 
+            }
+        }
+        if(entry.IsPromotion)
+        {
+            pieces[entry.Move.From.Col, entry.Move.From.Row] = new Pawn
+            {
+                Color = entry.PreviousTurn,
+                HasMoved = entry.OriginalHasMoved
+            };
+        }
+        else
+        {
+            pieces[entry.Move.From.Col, entry.Move.From.Row]!.HasMoved = entry.OriginalHasMoved;
+        }
         
+        if(pieces[entry.Move.From.Col, entry.Move.From.Row] is King && Math.Abs(entry.Move.From.Col - entry.Move.To.Col) == 2)
+        {
+            //undo castling
+            if(entry.Move.To.Col > entry.Move.From.Col) //kingside
+            {
+                pieces[7, entry.Move.To.Row] = pieces[5, entry.Move.To.Row];
+                pieces[5, entry.Move.To.Row] = null;
+                pieces[7, entry.Move.To.Row]!.HasMoved = false;
+            }
+            else //queenside
+            {
+                pieces[0, entry.Move.To.Row] = pieces[3, entry.Move.To.Row];
+                pieces[3, entry.Move.To.Row] = null;
+                pieces[0, entry.Move.To.Row]!.HasMoved = false;
+            }
+        }
+        
+        HalfmoveClock = entry.PreviousHalfmoveClock;
+        FullmoveCounter = entry.PreviousFullmoveCounter;
+        CurrentTurn = entry.PreviousTurn;
     }
     public void Draw()
     {
@@ -243,6 +292,23 @@ public class Board
         newBoard.FullmoveCounter = this.FullmoveCounter;
 
         return newBoard;
+    }
+    
+    //Call before applying move
+    public static void GenerateMoveHinstoryEntry(Board board, Move move)
+    {
+        MoveHistoryEntry entry = new();
+        
+        entry.Move = move;
+        entry.CapturedPiece = board.pieces[move.To.Col, move.To.Row];
+        entry.IsPromotion = board.pieces[move.From.Col, move.From.Row] is Pawn && (move.To.Row == 0 || move.To.Row == 7);
+        entry.OriginalHasMoved = board.pieces[move.From.Col, move.From.Row]!.HasMoved;
+        entry.PreviousEnPassant = board.EnPassantCoordinate;
+        entry.PreviousHalfmoveClock = board.HalfmoveClock;
+        entry.PreviousFullmoveCounter = board.FullmoveCounter;
+        entry.PreviousTurn = board.CurrentTurn;
+        
+        board.moveHistory.Push(entry);
     }
   
 }

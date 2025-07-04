@@ -1,7 +1,9 @@
 public static class GameLogic
 {
     public static void ApplyMove(Board board, Move move, char promotionPieceSymbol = 'q') //THIS METHOD APPLIES MOVE EVEN IF ITS ILLEGAL
-    {                  
+    {
+
+        Board.GenerateMoveHinstoryEntry(board, move);                  
         Piece pieceToMove = board.pieces[move.From.Col, move.From.Row]!;
         Piece? pieceToCapture = board.pieces[move.To.Col, move.To.Row];
         int pawnDirection = board.CurrentTurn == PieceColor.White ? 1 : -1; //Direction the current side pawns move
@@ -15,7 +17,7 @@ public static class GameLogic
             board.HalfmoveClock = 0;
         
         //Check if move is an en passant
-        if(move.To == board.EnPassantCoordinate)
+        if(move.To == board.EnPassantCoordinate && pieceToMove is Pawn)
         {
             Coordinate pieceToCaptureCoord = new(move.To.Col, move.To.Row - pawnDirection);
             board.pieces[pieceToCaptureCoord.Col, pieceToCaptureCoord.Row] = null;
@@ -52,7 +54,12 @@ public static class GameLogic
             board.pieces[move.To.Col, move.To.Row] = promotionPiece;         
         }
 
-        board.CurrentTurn = Piece.OppositeColor(board.CurrentTurn);            
+        board.CurrentTurn = Piece.OppositeColor(board.CurrentTurn);   
+        
+        if(board.pieces[move.To.Col, move.To.Row] == null)
+        {
+            Console.WriteLine("Error: Piece at destination is null after move application.");
+        }         
     }
     
     public static bool IsLegalMove(Board board, Move move)
@@ -83,7 +90,7 @@ public static class GameLogic
     }
     
     //returns if given side is checked
-    public static bool IsCheck(Board board, PieceColor sideChecked)
+    public static bool IsCheck(Board board, PieceColor sideChecked)//todo check from kings position towards sliding direction + knight positions
     {
         PieceColor sideChecking = Piece.OppositeColor(sideChecked);
         foreach(Coordinate attackedSquare in GetAllAttackedSquares(board, sideChecking))

@@ -9,20 +9,22 @@ public class Engine
         new(4, 4)
     };
 
-    public Move GetBestMove(Board board, int depth = 4)
+    public Move GetBestMove(Board board, int depth = 5)
     {
         Move? bestMove = null;
         float bestScore = float.MinValue;
         
+        PieceColor rootSide = board.CurrentTurn;
         List<Move> legalMoves = GameLogic.GetAllLegalMoves(board).ToList();
         legalMoves.Sort((a, b) => ScoreMove(board, b).CompareTo(ScoreMove(board, a)));
         
         foreach(Move move in legalMoves)
         {
-            Board tempBoard = board.Clone();
-            GameLogic.ApplyMove(tempBoard, move);
+            //Board tempBoard = board.Clone();
+            //GameLogic.ApplyMove(tempBoard, move);
+            GameLogic.ApplyMove(board, move);
 
-            float score = AlphaBeta(tempBoard, depth - 1, float.MinValue, float.MaxValue, tempBoard.CurrentTurn, board.CurrentTurn);
+            float score = AlphaBeta(board, depth - 1, float.MinValue, float.MaxValue, board.CurrentTurn, rootSide);
             Console.WriteLine($"Move {move} scored {score}");
             if(score > bestScore)
             {
@@ -30,6 +32,7 @@ public class Engine
                 bestMove = move;
                 Console.WriteLine($"New best move: {move} with score {score}");
             }
+            board.Undo();
         }
         
         Console.WriteLine($"Chosen move: {bestMove} with score {bestScore}");
@@ -45,11 +48,15 @@ public class Engine
         {
             float maxEval = float.MinValue;
             
-            foreach(Move move in GameLogic.GetAllLegalMoves(board))
+            List<Move> legalMoves = GameLogic.GetAllLegalMoves(board).ToList();
+            legalMoves.Sort((a, b) => ScoreMove(board, b).CompareTo(ScoreMove(board, a)));
+            
+            foreach(Move move in legalMoves)
             {
-                Board tempboard = board.Clone();
-                GameLogic.ApplyMove(tempboard, move);
-                float eval = AlphaBeta(tempboard, depth - 1, alpha, beta, tempboard.CurrentTurn, rootSide);
+                //Board tempboard = board.Clone();
+                GameLogic.ApplyMove(board, move);
+                float eval = AlphaBeta(board, depth - 1, alpha, beta, board.CurrentTurn, rootSide);
+                board.Undo();
                 maxEval = Math.Max(maxEval, eval);
                 alpha = Math.Max(alpha, eval);                 
         
@@ -64,11 +71,15 @@ public class Engine
         {
             float minEval = float.MaxValue;
             
-            foreach(Move move in GameLogic.GetAllLegalMoves(board))
+            List<Move> legalMoves = GameLogic.GetAllLegalMoves(board).ToList();
+            legalMoves.Sort((a, b) => ScoreMove(board, b).CompareTo(ScoreMove(board, a)));
+            
+            foreach(Move move in legalMoves)
             {
-                Board tempboard = board.Clone();
-                GameLogic.ApplyMove(tempboard, move);
-                float eval = AlphaBeta(tempboard, depth - 1, alpha, beta, tempboard.CurrentTurn, rootSide);
+                //Board tempboard = board.Clone();
+                GameLogic.ApplyMove(board, move);
+                float eval = AlphaBeta(board, depth - 1, alpha, beta, board.CurrentTurn, rootSide);
+                board.Undo();
                 minEval = Math.Min(minEval, eval);
                 beta = Math.Min(beta, eval);
                 
@@ -129,10 +140,11 @@ public class Engine
 
     float ScoreMove(Board board, Move move)
     {
-        Board tempBoard = board.Clone();
-        GameLogic.ApplyMove(tempBoard, move);
-        float eval = Evaluate(tempBoard, board.CurrentTurn);
+        if(board.pieces[move.To.Col, move.To.Row] == null)
+            return 0;
 
-        return eval;
+        float captureBalance = board.pieces[move.From.Col, move.From.Row]!.Value + board.pieces[move.To.Col, move.To.Row]!.Value;
+
+        return board.CurrentTurn == PieceColor.White ? captureBalance + 1 : -captureBalance + 1; //add 1 so that equal captures score over non-captures
     }
 }
