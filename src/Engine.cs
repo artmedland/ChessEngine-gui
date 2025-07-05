@@ -1,6 +1,12 @@
 
 public class Engine
 {
+    int Depth { get; set; }
+
+    public Engine(int depth)
+    {
+        Depth = depth;
+    }
     static readonly Coordinate[] centerSquares =
     {
         new(3, 3),
@@ -9,7 +15,7 @@ public class Engine
         new(4, 4)
     };
 
-    public Move GetBestMove(Board board, int depth = 5)
+    public Move GetBestMove(Board board)
     {
         Move? bestMove = null;
         float bestScore = float.MinValue;
@@ -24,8 +30,8 @@ public class Engine
             //GameLogic.ApplyMove(tempBoard, move);
             GameLogic.ApplyMove(board, move);
 
-            float score = AlphaBeta(board, depth - 1, float.MinValue, float.MaxValue, board.CurrentTurn, rootSide);
-            Console.WriteLine($"Move {move} scored {score}");
+            float score = AlphaBeta(board, Depth - 1, float.MinValue, float.MaxValue, board.CurrentTurn, rootSide);
+            //Console.WriteLine($"Move {move} scored {score}");
             if(score > bestScore)
             {
                 bestScore = score;
@@ -143,7 +149,9 @@ public class Engine
         if(board.pieces[move.To.Col, move.To.Row] == null)
             return 0;
 
-        float captureBalance = board.pieces[move.From.Col, move.From.Row]!.Value + board.pieces[move.To.Col, move.To.Row]!.Value;
+        //example white pawn captures black knight: -1 + 5 = 4
+  
+        float captureBalance = -board.pieces[move.From.Col, move.From.Row]!.Value - board.pieces[move.To.Col, move.To.Row]!.Value;
 
         return board.CurrentTurn == PieceColor.White ? captureBalance + 1 : -captureBalance + 1; //add 1 so that equal captures score over non-captures
     }

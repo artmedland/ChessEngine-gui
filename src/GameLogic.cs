@@ -37,13 +37,15 @@ public static class GameLogic
         {
             if(move.To.Col == 6) //Kingside
             {
-                board.pieces[5, move.To.Row] = board.pieces[7, move.From.Row] ;
+                board.pieces[5, move.To.Row] = board.pieces[7, move.From.Row];
                 board.pieces[7, move.From.Row] = null;
+                board.pieces[5, move.To.Row]!.HasMoved = true; 
             }
             else if(move.To.Col == 2) //Queenside
             {
-                board.pieces[3, move.To.Row] = board.pieces[0, move.From.Row] ;
+                board.pieces[3, move.To.Row] = board.pieces[0, move.From.Row];
                 board.pieces[0, move.From.Row] = null;
+                board.pieces[3, move.To.Row]!.HasMoved = true;
             }
         }                
         //Promotion
@@ -55,11 +57,7 @@ public static class GameLogic
         }
 
         board.CurrentTurn = Piece.OppositeColor(board.CurrentTurn);   
-        
-        if(board.pieces[move.To.Col, move.To.Row] == null)
-        {
-            Console.WriteLine("Error: Piece at destination is null after move application.");
-        }         
+               
     }
     
     public static bool IsLegalMove(Board board, Move move)

@@ -2,6 +2,7 @@
 class Program
 {
     public static bool UseUnicodeSymbols { get; set; } = true;
+    static int defaultDepth = 4;
     
     const string HelpText = @"
 Available commands:
@@ -108,6 +109,27 @@ Available commands:
         {
             return true;
         }
+        else if(inputLower == "depth")
+        {
+            Console.WriteLine(defaultDepth);
+        }
+        else if(inputLower.StartsWith("depth "))
+        {
+            try
+            {
+                int num = int.Parse(inputLower["depth ".Length..].Trim());
+                
+                if(num < 1)
+                    throw new Exception("Depth must be at least 1");
+                
+                defaultDepth = num;                
+                Console.WriteLine($"Depth set to {defaultDepth}");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Invalid depth");
+            }
+        }
         else
         {
             Console.WriteLine();
@@ -189,7 +211,7 @@ Available commands:
     
     static void EngineVEngineGame(Board board)
     {
-        Engine engine = new();
+        Engine engine = new(defaultDepth);
         
         while(true) //Game loop
         {             
@@ -228,7 +250,7 @@ Available commands:
     static void PlayerVEngineGame(Board board, PieceColor playerSide)
     {
         Stack<string> FENhistory = new();
-        Engine engine = new();
+        Engine engine = new(defaultDepth);
 
         while(true) //Game loop
         {             
