@@ -14,6 +14,8 @@ public class Engine
         new(4, 3),
         new(4, 4)
     };
+    
+    static readonly int[] postCastleKingColumns = [0, 1, 2, 6, 7];
 
     public Move GetBestMove(Board board)
     {
@@ -116,6 +118,8 @@ public class Engine
         finalScore -= GetAttackedSquaresScore(board, PieceColor.Black);
         finalScore += GetCenterPawnScore(board, PieceColor.White);
         finalScore -= GetCenterPawnScore(board, PieceColor.Black);
+        finalScore += GetKingFafetyScore(board, PieceColor.White);
+        finalScore -= GetKingFafetyScore(board, PieceColor.Black);
         
         return side == PieceColor.White ? finalScore : -finalScore; 
     }
@@ -142,6 +146,28 @@ public class Engine
         }
         
         return score;
+    }
+    
+    float GetKingFafetyScore(Board board, PieceColor side)
+    {
+        if(side == PieceColor.White)
+        {
+            foreach(int col in postCastleKingColumns)
+            {
+                if(board.pieces[col, 0] is King king && king.Color == PieceColor.White)
+                    return 0.15f;
+            }
+        }
+        else
+        {
+            foreach(int col in postCastleKingColumns)
+            {
+                if(board.pieces[col, 7] is King king && king.Color == PieceColor.Black)
+                    return 0.15f;
+            }
+        }
+
+        return 0;
     }
 
     float ScoreMove(Board board, Move move)
