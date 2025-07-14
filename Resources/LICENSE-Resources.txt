@@ -1,0 +1,17 @@
+# LICENSE FOR ADDED RESOURCES
+
+The resources provided in the Resources folder of this repository are licensed under the following triple-license model:
+
+1. **GNU Free Documentation License (GFDL)**:
+   - Applies to the images in the `Resources/` folder.
+   - Full text: https://www.gnu.org/licenses/fdl-1.3.html
+
+2. **BSD License**:
+   - Applies to the images in the `Resources/` folder.
+   - Full text: https://opensource.org/licenses/BSD-3-Clause
+
+3. **GNU General Public License (GPL)**:
+   - Applies to the images in the `Resources/` folder.
+   - Full text: https://www.gnu.org/licenses/gpl-3.0.html
+
+All other content in this repository remains under the original project's license.
