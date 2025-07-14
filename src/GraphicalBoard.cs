@@ -31,6 +31,7 @@ public partial class GraphicalBoard : Form
     private bool isEngineCalculating;
     private Point? drag = null;
     private Label status;
+    private TextBox balance;
 
     private readonly Color primaryColor = Color.Wheat;
     private readonly Color secondaryColor = Color.BurlyWood;
@@ -95,7 +96,19 @@ public partial class GraphicalBoard : Form
         end.Click += End;
         Controls.Add(end);
 
-        status = new Label
+        balance = new()
+        {
+            ReadOnly = true,
+            Text = "",
+            Font = new Font(family: GetFont(), 14),
+            Size = new(80, 30),
+            ForeColor = Color.Black,
+            BackColor = Color.White,
+            BorderStyle = BorderStyle.None,
+        };
+        Controls.Add(balance);
+
+        status = new()
         {
             Text = "",
             Font = new Font(family: GetFont(), 36, FontStyle.Bold),
@@ -202,6 +215,7 @@ public partial class GraphicalBoard : Form
             }
         }
 
+        UpdateTextBox();
         CheckGameStatus();
         Refresh();
     }
@@ -269,6 +283,11 @@ public partial class GraphicalBoard : Form
         legalMoves = [.. GameLogic.GetAllLegalMoves(board).Where(m => m.From == coord)];
 
         ShowLegalMoves();
+    }
+
+    private void UpdateTextBox()
+    {
+        balance.Text = $"{GameLogic.GetMaterialBalance(board)}";
     }
 
     /// <summary>
@@ -471,6 +490,8 @@ public partial class GraphicalBoard : Form
 
         undo.Location = new(10, area + 10);
         end.Location = new(100, area + 10);
+        balance.Location = new(200, area + 10);
+        balance.BringToFront();
         status.Location = new(xPos + (area - status.Width) / 2, (area - status.Height) / 2);
         status.BringToFront();
         
